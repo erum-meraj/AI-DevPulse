@@ -3,7 +3,7 @@ from app.schemas.analysis import ClusterAnalysis
 from app.services.ai_provider import AIProvider
 
 
-class FakeMessages:
+class FakeCompletions:
     def __init__(self) -> None:
         self.kwargs = {}
 
@@ -24,9 +24,14 @@ class FakeMessages:
         )
 
 
+class FakeChat:
+    def __init__(self) -> None:
+        self.completions = FakeCompletions()
+
+
 class FakeStructuredClient:
     def __init__(self) -> None:
-        self.messages = FakeMessages()
+        self.chat = FakeChat()
 
 
 async def test_complete_structured_uses_response_model_and_two_retries() -> None:
@@ -36,6 +41,6 @@ async def test_complete_structured_uses_response_model_and_two_retries() -> None
     result = await provider.complete_structured("Analyze this", ClusterAnalysis, "test-model")
 
     assert isinstance(result, ClusterAnalysis)
-    assert client.messages.kwargs["response_model"] is ClusterAnalysis
-    assert client.messages.kwargs["max_retries"] == ANALYSIS_MAX_RETRIES
-    assert client.messages.kwargs["model"] == "test-model"
+    assert client.chat.completions.kwargs["response_model"] is ClusterAnalysis
+    assert client.chat.completions.kwargs["max_retries"] == ANALYSIS_MAX_RETRIES
+    assert client.chat.completions.kwargs["model"] == "test-model"

@@ -2,8 +2,8 @@ import os
 import sys
 from pathlib import Path
 
-import pytest_asyncio
 import pytest
+import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.pool import NullPool
 
@@ -25,6 +25,12 @@ settings = get_settings()
 
 @pytest_asyncio.fixture
 async def engine():
+    """Function-scoped: a fresh engine (and NullPool, so no connection is
+    reused across event loops) per test. pytest-asyncio creates a new event
+    loop per test function by default; asyncpg connections are bound to the
+    loop that created them, so a session-scoped engine breaks on the second
+    test. Function-scoping the engine keeps engine lifetime == loop lifetime.
+    """
     eng = create_async_engine(settings.DATABASE_URL, poolclass=NullPool)
     async with eng.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
@@ -34,8 +40,8 @@ async def engine():
 
 @pytest_asyncio.fixture
 async def async_session(engine):
-    """Rollback-per-test: every test runs in a transaction that's rolled back,
-    so tests never leak state into each other (spec §16).
+    """Rollback-per-test: wraps the whole test in one transaction and rolls
+    it back at the end, so no data survives between tests.
     """
     async with engine.connect() as conn:
         trans = await conn.begin()

@@ -9,8 +9,10 @@ class Settings(BaseSettings):
     Never hardcode secrets or environment-specific values elsewhere in the codebase.
     """
 
-    OPENAI_API_KEY: str
-    ANTHROPIC_API_KEY: str
+    AICREDITS_API_KEY: str
+    AICREDITS_BASE_URL: str = "https://api.aicredits.in/v1"
+    AICREDITS_CHAT_MODEL: str = "deepseek/deepseek-v3.2"
+    AICREDITS_EMBEDDING_MODEL: str = "text-embedding-3-small"
 
     DATABASE_URL: str
     REDIS_URL: str
