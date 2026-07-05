@@ -1,4 +1,4 @@
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 
 import factory
 
@@ -53,7 +53,7 @@ class DailyBriefFactory(factory.Factory):
     class Meta:
         model = DailyBrief
 
-    date = factory.LazyFunction(date.today)
+    date = factory.Sequence(lambda n: date(2026, 1, 1) + timedelta(days=n))
     summary = "Today's major AI engineering developments."
     estimated_read_time_minutes = 3
     stories_analyzed = 20
