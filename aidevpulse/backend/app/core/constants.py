@@ -1,5 +1,5 @@
 """All tunable thresholds and magic numbers live here, per spec ยง18.
-Never inline these values in services โ�� import from this module instead.
+Never inline these values in services โ import from this module instead.
 """
 
 # --- Clustering (spec ยง6.2) ---
@@ -72,10 +72,19 @@ HTTP_MIN_REQUEST_INTERVAL_SECONDS = 1.0
 HACKERNEWS_TOP_STORIES_URL = "https://hacker-news.firebaseio.com/v0/topstories.json"
 HACKERNEWS_NEW_STORIES_URL = "https://hacker-news.firebaseio.com/v0/newstories.json"
 HACKERNEWS_ITEM_URL_TEMPLATE = "https://hacker-news.firebaseio.com/v0/item/{item_id}.json"
+HACKERNEWS_MAX_ITEMS_PER_FETCH = 30
 
+# Anthropic has no official RSS feed. This is an unofficial, community-maintained
+# scraper (https://github.com/taobojlen/anthropic-rss-feed) that rebuilds a feed
+# from Anthropic's blog. If this connector silently stops returning new articles,
+# check whether that repo is still actively maintained before assuming a bug here.
 OPENAI_RSS_FEED_URL = "https://openai.com/news/rss.xml"
-ANTHROPIC_RSS_FEED_URL = "https://www.anthropic.com/news/rss.xml"
+ANTHROPIC_RSS_FEED_URL = (
+    "https://raw.githubusercontent.com/taobojlen/anthropic-rss-feed/main/anthropic_news_rss.xml"
+)
 HUGGINGFACE_RSS_FEED_URL = "https://huggingface.co/blog/feed.xml"
+
+RSS_LOOKBACK_HOURS = 72
 
 AI_RELEVANT_KEYWORDS = [
     "ai",

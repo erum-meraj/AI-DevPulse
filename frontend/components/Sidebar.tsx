@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import {
   LayoutGrid,
   TrendingUp,
@@ -11,23 +12,23 @@ import {
 } from "lucide-react";
 
 const navItems = [
-  { name: "Dashboard", icon: LayoutGrid },
-  { name: "Trending", icon: TrendingUp },
-  { name: "Papers", icon: FileText },
-  { name: "Weekly Reports", icon: BarChart },
-  { name: "Bookmarks", icon: Bookmark },
-  { name: "Settings", icon: Settings },
+  { name: "Dashboard", icon: LayoutGrid, href: "/" },
+  { name: "Trending", icon: TrendingUp, href: "#" },
+  { name: "Papers", icon: FileText, href: "#" },
+  { name: "Weekly Reports", icon: BarChart, href: "#" },
+  { name: "Bookmarks", icon: Bookmark, href: "#" },
+  { name: "Settings", icon: Settings, href: "#" },
 ];
 
 const topics = ["Agents", "LLMs", "Infrastructure"];
 
 export function Sidebar() {
   return (
-    <aside className="fixed left-0 top-0 h-full w-[260px] flex flex-col border-r border-gray-200 bg-white">
+    <aside className="fixed left-0 top-0 h-full w-[260px] flex flex-col border-r border-slate-200 bg-white">
       {/* Logo Section */}
       <div className="p-6">
-        <div className="font-bold text-xl text-gray-900">AI DevPulse</div>
-        <div className="text-sm text-gray-500 mt-1">
+        <div className="font-bold text-xl text-slate-900">AI DevPulse</div>
+        <div className="text-sm text-slate-500 mt-1">
           Personal Intelligence Terminal
         </div>
       </div>
@@ -35,40 +36,40 @@ export function Sidebar() {
       {/* Navigation */}
       <nav className="flex-1 px-3 py-2 space-y-1">
         {navItems.map((item) => (
-          <a
+          <Link
             key={item.name}
-            href="#"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors"
+            href={item.href}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-slate-700 hover:bg-slate-50"
           >
-            <item.icon className="w-4 h-4 text-gray-500" />
-            <span className="text-gray-700">{item.name}</span>
-          </a>
+            <item.icon className="w-5 h-5 text-slate-500" />
+            <span>{item.name}</span>
+          </Link>
         ))}
       </nav>
 
       {/* User Info */}
-      <div className="px-4 py-3 border-t border-gray-200">
+      <div className="px-4 py-3 border-t border-slate-200">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-medium">
+          <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-medium">
             E
           </div>
           <div>
-            <div className="text-sm font-medium text-gray-900">Erum</div>
-            <div className="text-xs text-gray-500">AI Engineer</div>
+            <div className="text-sm font-medium text-slate-900">Erum</div>
+            <div className="text-xs text-slate-500">AI Engineer</div>
           </div>
         </div>
       </div>
 
       {/* Topics */}
-      <div className="px-4 py-3 border-t border-gray-200">
-        <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+      <div className="px-4 py-3 border-t border-slate-200">
+        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
           TOPICS
         </div>
         <div className="flex flex-wrap gap-2">
           {topics.map((topic) => (
             <span
               key={topic}
-              className="px-2.5 py-1 rounded-md bg-gray-100 text-xs font-medium text-gray-700"
+              className="px-2.5 py-1 rounded-md bg-slate-100 text-xs font-medium text-slate-700"
             >
               {topic}
             </span>

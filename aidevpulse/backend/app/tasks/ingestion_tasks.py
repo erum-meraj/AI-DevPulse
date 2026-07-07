@@ -5,6 +5,8 @@ from app.db.session import AsyncSessionLocal
 from app.services.ingestion_service import IngestionService
 from app.tasks.celery_app import celery_app
 
+from app.db import model_registry  # noqa: F401  (ensures all ORM models are registered before any DB operation runs)
+
 logger = get_logger(__name__)
 
 

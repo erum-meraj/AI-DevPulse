@@ -1,10 +1,12 @@
 import calendar
+from datetime import timedelta
 from datetime import UTC, datetime
 
 import feedparser
 
 from app.connectors.base import RawArticle
 from app.connectors.http_base import HTTPConnector
+from app.core.constants import RSS_LOOKBACK_HOURS
 
 
 class RSSConnector(HTTPConnector):
@@ -18,6 +20,9 @@ class RSSConnector(HTTPConnector):
         for entry in parsed_feed.entries:
             published_at = self._published_at_for_entry(entry)
             if published_at is None:
+                continue
+
+            if published_at < datetime.now(UTC) - timedelta(hours=RSS_LOOKBACK_HOURS):
                 continue
 
             url = getattr(entry, "link", None)

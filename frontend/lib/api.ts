@@ -18,6 +18,12 @@ export interface ClusterSummary {
   created_at: string;
 }
 
+export interface Article {
+  title?: string;
+  source?: string;
+  published_at?: string;
+}
+
 export interface TrendSummary {
   id: string;
   name: string;
@@ -45,7 +51,7 @@ interface PaginatedResponse<T> {
   total_pages: number;
 }
 
-interface DashboardResponse {
+export interface DashboardResponse {
   brief: DailyBriefSummary | null;
   top_clusters: ClusterSummary[];
   trend_highlights: TrendSummary[];
@@ -99,7 +105,7 @@ export async function getStories(
   return response.json();
 }
 
-export async function getStory(id: string): Promise<ClusterSummary & { member_articles: unknown[] }> {
+export async function getStory(id: string): Promise<ClusterSummary & { member_articles: Article[] }> {
   const response = await fetch(buildUrl(`/stories/${id}`));
   if (!response.ok) {
     throw new Error(`Story fetch failed: ${response.status}`);

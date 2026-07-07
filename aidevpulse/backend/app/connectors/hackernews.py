@@ -7,6 +7,7 @@ from app.connectors.http_base import HTTPConnector
 from app.core.constants import (
     AI_RELEVANT_KEYWORDS,
     HACKERNEWS_ITEM_URL_TEMPLATE,
+    HACKERNEWS_MAX_ITEMS_PER_FETCH,
     HACKERNEWS_NEW_STORIES_URL,
     HACKERNEWS_TOP_STORIES_URL,
     SOURCE_HACKERNEWS,
@@ -16,9 +17,7 @@ from app.core.constants import (
 class HackerNewsConnector(HTTPConnector):
     source_name = SOURCE_HACKERNEWS
     _keyword_pattern = re.compile(
-        r"\b(?:"
-        + "|".join(re.escape(keyword) for keyword in AI_RELEVANT_KEYWORDS)
-        + r")\b",
+        r"\b(?:" + "|".join(re.escape(keyword) for keyword in AI_RELEVANT_KEYWORDS) + r")\b",
         re.IGNORECASE,
     )
 
@@ -32,6 +31,8 @@ class HackerNewsConnector(HTTPConnector):
             if isinstance(item_id, int) and item_id not in seen_ids:
                 seen_ids.add(item_id)
                 ordered_ids.append(item_id)
+
+        ordered_ids = ordered_ids[:HACKERNEWS_MAX_ITEMS_PER_FETCH]
 
         articles: list[RawArticle] = []
         for item_id in ordered_ids:
