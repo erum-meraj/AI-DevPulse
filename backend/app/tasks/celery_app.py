@@ -1,5 +1,6 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
+from apscheduler.triggers.cron import CronTrigger
 from celery import Celery
 
 from app.core.config import get_settings
@@ -14,6 +15,14 @@ celery_app = Celery(
 celery_app.conf.update(
     timezone=settings.TIMEZONE,
     task_default_queue="aidevpulse",
+    imports=(
+        "app.tasks.ingestion_tasks",
+        "app.tasks.embedding_tasks",
+        "app.tasks.clustering_tasks",
+        "app.tasks.analysis_tasks",
+        "app.tasks.trend_tasks",
+        "app.tasks.brief_tasks",
+    ),
 )
 
 _scheduler: BackgroundScheduler | None = None
@@ -31,6 +40,12 @@ def trigger_generate_embeddings() -> None:
     generate_embeddings.delay()
 
 
+def trigger_generate_daily_brief() -> None:
+    from app.tasks.brief_tasks import generate_daily_brief
+
+    generate_daily_brief.delay()
+
+
 def register_scheduler_jobs(scheduler: BackgroundScheduler) -> None:
     scheduler.add_job(
         trigger_collect_articles,
@@ -42,6 +57,12 @@ def register_scheduler_jobs(scheduler: BackgroundScheduler) -> None:
         trigger_generate_embeddings,
         IntervalTrigger(minutes=10, timezone=settings.TIMEZONE),
         id="generate_embeddings_every_10_minutes",
+        replace_existing=True,
+    )
+    scheduler.add_job(
+        trigger_generate_daily_brief,
+        CronTrigger(hour=settings.DAILY_BRIEF_HOUR, minute=0, timezone=settings.TIMEZONE),
+        id="generate_daily_brief_at_configured_hour",
         replace_existing=True,
     )
 

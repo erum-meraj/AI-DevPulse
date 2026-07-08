@@ -4,19 +4,13 @@ import React from "react";
 import Link from "next/link";
 import {
   LayoutGrid,
-  TrendingUp,
   FileText,
-  BarChart,
-  Bookmark,
   Settings,
 } from "lucide-react";
 
 const navItems = [
   { name: "Dashboard", icon: LayoutGrid, href: "/" },
-  { name: "Trending", icon: TrendingUp, href: "#" },
   { name: "Papers", icon: FileText, href: "#" },
-  { name: "Weekly Reports", icon: BarChart, href: "#" },
-  { name: "Bookmarks", icon: Bookmark, href: "#" },
   { name: "Settings", icon: Settings, href: "#" },
 ];
 

@@ -1,4 +1,6 @@
-from sqlalchemy import select
+from datetime import datetime
+
+from sqlalchemy import func, select
 
 from app.models.article import Article
 from app.repositories.base import BaseRepository
@@ -30,3 +32,11 @@ class ArticleRepository(BaseRepository[Article]):
             .order_by(Article.published_at.asc())
         )
         return list(result.scalars().all())
+
+    async def count_published_between(self, start: datetime, end: datetime) -> int:
+        result = await self.session.execute(
+            select(func.count(Article.id)).where(
+                Article.published_at >= start, Article.published_at < end
+            )
+        )
+        return result.scalar_one()

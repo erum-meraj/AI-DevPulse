@@ -19,6 +19,10 @@ class Settings(BaseSettings):
 
     DISCORD_BOT_TOKEN: str | None = None
 
+    EMAIL_ADDRESS: str | None = None
+    EMAIL_APP_PASSWORD: str | None = None
+    EMAIL_TO: str | None = None
+
     TIMEZONE: str = "UTC"
     DAILY_BRIEF_HOUR: int = 7
 

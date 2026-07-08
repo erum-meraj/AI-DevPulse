@@ -1,7 +1,7 @@
 import asyncio
 
 from app.core.logging import get_logger
-from app.db.session import AsyncSessionLocal
+from app.db.session import task_scoped_session
 from app.services.embedding_service import EmbeddingService
 from app.tasks.celery_app import celery_app
 
@@ -18,7 +18,7 @@ def generate_embeddings() -> dict[str, int]:
 
 
 async def _generate_embeddings() -> dict[str, int]:
-    async with AsyncSessionLocal() as session:
+    async with task_scoped_session() as session:
         service = EmbeddingService(session)
         result = await service.embed_pending_articles()
     logger.info("generate_embeddings_completed", result=result)

@@ -1,7 +1,7 @@
 import asyncio
 
 from app.core.logging import get_logger
-from app.db.session import AsyncSessionLocal
+from app.db.session import task_scoped_session
 from app.services.ingestion_service import IngestionService
 from app.tasks.celery_app import celery_app
 
@@ -16,7 +16,7 @@ def collect_articles() -> dict[str, int]:
 
 
 async def _collect_articles() -> dict[str, int]:
-    async with AsyncSessionLocal() as session:
+    async with task_scoped_session() as session:
         service = IngestionService(session)
         counts = await service.collect_articles()
     logger.info("collect_articles_completed", counts=counts)

@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class DailyBriefSummary(BaseModel):
@@ -28,3 +28,7 @@ class WeeklyTotals(BaseModel):
 class WeeklyReportResponse(BaseModel):
     briefs: list[DailyBriefSummary]
     totals: WeeklyTotals
+
+
+class BriefNarrative(BaseModel):
+    summary: str = Field(..., description="2-3 paragraph narrative covering today's major themes")
