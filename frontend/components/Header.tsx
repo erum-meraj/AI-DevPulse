@@ -46,10 +46,15 @@ export function Header() {
 
       <div className="flex items-center gap-4">
         {/* Notification Bell */}
-        <button className="relative p-2 rounded-lg hover:bg-slate-100 text-slate-600">
-          <Bell className="w-5 h-5" />
-          <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
-        </button>
+        <div className="group relative">
+          <button className="relative p-2 rounded-lg hover:bg-slate-100 text-slate-600">
+            <Bell className="w-5 h-5" />
+            <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
+          </button>
+          <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 hidden group-hover:block px-2 py-1 bg-slate-800 text-white text-xs rounded">
+            Coming soon
+          </div>
+        </div>
 
         {/* Email Notification Status */}
         <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-50 border border-green-100">
@@ -61,8 +66,13 @@ export function Header() {
         </div>
 
         {/* User Avatar */}
-        <div className="w-9 h-9 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-medium text-sm">
-          {name.charAt(0)}
+        <div className="group relative">
+          <div className="w-9 h-9 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-medium text-sm">
+            {name.charAt(0)}
+          </div>
+          <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 hidden group-hover:block px-2 py-1 bg-slate-800 text-white text-xs rounded">
+            Coming soon
+          </div>
         </div>
 
         {/* Read Time Badge */}

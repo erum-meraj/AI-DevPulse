@@ -24,6 +24,11 @@ export interface Article {
   published_at?: string;
 }
 
+export interface TopicFrequency {
+  name: string
+  mention_count: number
+}
+
 export interface TrendSummary {
   id: string;
   name: string;
@@ -136,6 +141,16 @@ export async function getWeeklyReport(): Promise<WeeklyReportResponse> {
   const response = await fetch(buildUrl("/weekly-report"));
   if (!response.ok) {
     throw new Error(`Weekly report fetch failed: ${response.status}`);
+  }
+  return response.json();
+}
+
+export async function getTopTopics(
+  limit?: number
+): Promise<TopicFrequency[]> {
+  const response = await fetch(buildUrl("/topics/top", { limit }));
+  if (!response.ok) {
+    throw new Error(`Top topics fetch failed: ${response.status}`);
   }
   return response.json();
 }

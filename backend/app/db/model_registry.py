@@ -9,3 +9,4 @@ from app.models.cluster import StoryCluster  # noqa: F401
 from app.models.daily_brief import DailyBrief  # noqa: F401
 from app.models.topic import ArticleTopic, Topic  # noqa: F401
 from app.models.trend import Trend  # noqa: F401
+from app.models.paper import Paper, PaperRelevanceWeight  # noqa: F401

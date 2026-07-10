@@ -25,9 +25,7 @@ class TopicRepository(BaseRepository[Topic]):
             return topic
         return await self.create(name=name)
 
-    async def add_article_topic(
-        self, article_id: uuid.UUID, topic_id: uuid.UUID
-    ) -> ArticleTopic:
+    async def add_article_topic(self, article_id: uuid.UUID, topic_id: uuid.UUID) -> ArticleTopic:
         association = ArticleTopic(article_id=article_id, topic_id=topic_id)
         self.session.add(association)
         await self.session.flush()
@@ -43,9 +41,7 @@ class TopicRepository(BaseRepository[Topic]):
             return association
         return await self.add_article_topic(article_id, topic_id)
 
-    async def count_mentions(
-        self, topic_id: uuid.UUID, start: datetime, end: datetime
-    ) -> int:
+    async def count_mentions(self, topic_id: uuid.UUID, start: datetime, end: datetime) -> int:
         result = await self.session.execute(
             select(func.count(Article.id))
             .join(ArticleTopic, Article.id == ArticleTopic.article_id)
@@ -58,9 +54,29 @@ class TopicRepository(BaseRepository[Topic]):
         )
         return int(result.scalar_one())
 
-    async def remove_article_topic(
-        self, article_id: uuid.UUID, topic_id: uuid.UUID
-    ) -> None:
+    async def get_top_by_mentions(
+        self, start: datetime, end: datetime, limit: int = 3
+    ) -> list[tuple[Topic, int]]:
+        """Return the top N topics by article mention count in the given
+        window, each paired with its count. Only counts articles that
+        have been clustered (cluster_id is not null), matching the same
+        filter used by count_mentions."""
+        result = await self.session.execute(
+            select(Topic, func.count(Article.id).label("mention_count"))
+            .join(ArticleTopic, Topic.id == ArticleTopic.topic_id)
+            .join(Article, Article.id == ArticleTopic.article_id)
+            .where(
+                Article.cluster_id.is_not(None),
+                Article.published_at >= start,
+                Article.published_at < end,
+            )
+            .group_by(Topic.id)
+            .order_by(func.count(Article.id).desc())
+            .limit(limit)
+        )
+        return [(row[0], row[1]) for row in result.all()]
+
+    async def remove_article_topic(self, article_id: uuid.UUID, topic_id: uuid.UUID) -> None:
         association = await self.session.get(
             ArticleTopic, {"article_id": article_id, "topic_id": topic_id}
         )

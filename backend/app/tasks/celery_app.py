@@ -22,6 +22,7 @@ celery_app.conf.update(
         "app.tasks.analysis_tasks",
         "app.tasks.trend_tasks",
         "app.tasks.brief_tasks",
+        "app.tasks.paper_tasks",
     ),
 )
 
@@ -46,6 +47,12 @@ def trigger_generate_daily_brief() -> None:
     generate_daily_brief.delay()
 
 
+def trigger_collect_papers() -> None:
+    from app.tasks.paper_tasks import collect_papers
+
+    collect_papers.delay()
+
+
 def register_scheduler_jobs(scheduler: BackgroundScheduler) -> None:
     scheduler.add_job(
         trigger_collect_articles,
@@ -63,6 +70,12 @@ def register_scheduler_jobs(scheduler: BackgroundScheduler) -> None:
         trigger_generate_daily_brief,
         CronTrigger(hour=settings.DAILY_BRIEF_HOUR, minute=0, timezone=settings.TIMEZONE),
         id="generate_daily_brief_at_configured_hour",
+        replace_existing=True,
+    )
+    scheduler.add_job(
+        trigger_collect_papers,
+        CronTrigger(hour=settings.DAILY_BRIEF_HOUR, minute=30, timezone=settings.TIMEZONE),
+        id="collect_papers_daily",
         replace_existing=True,
     )
 

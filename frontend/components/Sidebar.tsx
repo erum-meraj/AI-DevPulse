@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { getTopTopics, TopicFrequency } from "@/lib/api";
 import {
   LayoutGrid,
   FileText,
@@ -14,9 +15,25 @@ const navItems = [
   { name: "Settings", icon: Settings, href: "#" },
 ];
 
-const topics = ["Agents", "LLMs", "Infrastructure"];
-
 export function Sidebar() {
+  const [topics, setTopics] = useState<TopicFrequency[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTopics = async () => {
+      try {
+        const data = await getTopTopics();
+        setTopics(data);
+      } catch (error) {
+        console.error("Failed to fetch topics:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTopics();
+  }, []);
+
   return (
     <aside className="fixed left-0 top-0 h-full w-[260px] flex flex-col border-r border-slate-200 bg-white">
       {/* Logo Section */}
@@ -59,16 +76,22 @@ export function Sidebar() {
         <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
           TOPICS
         </div>
-        <div className="flex flex-wrap gap-2">
-          {topics.map((topic) => (
-            <span
-              key={topic}
-              className="px-2.5 py-1 rounded-md bg-slate-100 text-xs font-medium text-slate-700"
-            >
-              {topic}
-            </span>
-          ))}
-        </div>
+        {loading ? (
+          <div className="text-xs text-slate-400 italic">Loading...</div>
+        ) : topics.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {topics.map((topic) => (
+              <span
+                key={topic.name}
+                className="px-2.5 py-1 rounded-md bg-slate-100 text-xs font-medium text-slate-700"
+              >
+                {topic.name}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <div className="text-xs text-slate-400 italic">No trending topics yet</div>
+        )}
       </div>
     </aside>
   );

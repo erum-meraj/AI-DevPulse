@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, ExternalLink } from "lucide-react";
 import { getStory } from "@/lib/api";
 import type { ClusterSummary } from "@/lib/api";
 
@@ -18,6 +18,7 @@ export default function StoryDetailPage() {
     title?: string;
     source?: string;
     published_at?: string;
+    url?: string;
   }
 
   const [story, setStory] = useState<ClusterSummary & { member_articles: Article[] } | null>(null);
@@ -168,6 +169,17 @@ export default function StoryDetailPage() {
                         {article.source && <span className="bg-zinc-200 dark:bg-zinc-800 px-2 py-0.5 rounded">Source: {article.source}</span>}
                         {article.published_at && <span>Published: {formatDate(article.published_at)}</span>}
                       </div>
+                      {article.url && (
+                        <a
+                          href={article.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-blue-600 hover:underline text-sm mt-2"
+                        >
+                          Read original article
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      )}
                     </li>
                   ))}
                 </ul>
