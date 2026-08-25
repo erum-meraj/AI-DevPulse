@@ -22,6 +22,21 @@ class PaperRepository(BaseRepository[Paper]):
         )
         return list(result.scalars().all())
 
+    async def list_top_by_relevance_with_min_upvotes(
+        self, min_upvotes: int, limit: int = 5
+    ) -> list[Paper]:
+        """Top N papers by relevance_score, restricted to papers with at
+        least min_upvotes. Returns however many qualify, even if fewer
+        than limit -- an empty or short result is expected and valid on
+        days where few papers clear the upvote bar, not an error."""
+        result = await self.session.execute(
+            select(Paper)
+            .where(Paper.upvotes >= min_upvotes)
+            .order_by(Paper.relevance_score.desc().nulls_last(), Paper.upvotes.desc())
+            .limit(limit)
+        )
+        return list(result.scalars().all())
+
 
 class PaperRelevanceWeightRepository(BaseRepository[PaperRelevanceWeight]):
     model = PaperRelevanceWeight

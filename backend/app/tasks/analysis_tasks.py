@@ -28,7 +28,7 @@ async def _analyze_and_rank_clusters() -> dict[str, int]:
         analysis_service = AnalysisService(session)
         ranking_service = RankingService(session)
 
-        clusters = await cluster_repo.get_recently_updated(within_days=1)
+        clusters = await cluster_repo.get_pending_analysis(within_days=7)
         analyzed = 0
         skipped = 0
 

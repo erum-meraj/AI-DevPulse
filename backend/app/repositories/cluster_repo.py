@@ -28,9 +28,7 @@ class ClusterRepository(BaseRepository[StoryCluster]):
         self, sort_by: str = "importance", page: int = 1, page_size: int = 20
     ) -> list[StoryCluster]:
         sort_column = (
-            StoryCluster.created_at
-            if sort_by == "created_at"
-            else StoryCluster.importance
+            StoryCluster.created_at if sort_by == "created_at" else StoryCluster.importance
         )
         result = await self.session.execute(
             select(StoryCluster)
@@ -63,6 +61,28 @@ class ClusterRepository(BaseRepository[StoryCluster]):
         result = await self.session.execute(
             select(StoryCluster)
             .where(StoryCluster.updated_at >= cutoff)
+            .order_by(desc(StoryCluster.updated_at))
+        )
+        return list(result.scalars().all())
+
+    async def get_pending_analysis(self, within_days: int = 7) -> list[StoryCluster]:
+        """Returns clusters that have at least one member article still
+        in 'clustered' status (clustered but not yet analyzed). Unlike
+        get_recently_updated, this does NOT re-match clusters purely
+        because rank_cluster() touched their updated_at timestamp --
+        using get_recently_updated here caused an infinite re-analysis
+        loop (same clusters re-analyzed every cycle, confirmed via
+        worker logs) since analysis itself updates updated_at."""
+        cutoff = datetime.now().astimezone() - timedelta(days=within_days)
+        has_unanalyzed_member = exists(
+            select(Article.id).where(
+                Article.cluster_id == StoryCluster.id,
+                Article.status == "clustered",
+            )
+        )
+        result = await self.session.execute(
+            select(StoryCluster)
+            .where(StoryCluster.updated_at >= cutoff, has_unanalyzed_member)
             .order_by(desc(StoryCluster.updated_at))
         )
         return list(result.scalars().all())

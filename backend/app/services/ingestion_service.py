@@ -23,20 +23,14 @@ def get_default_connectors() -> list[Connector]:
 class IngestionService:
     """Fetch raw articles from connectors, dedupe by URL, and persist new rows."""
 
-    def __init__(
-        self, session: AsyncSession, connectors: Sequence[Connector] | None = None
-    ):
+    def __init__(self, session: AsyncSession, connectors: Sequence[Connector] | None = None):
         self.session = session
         self.article_repository = ArticleRepository(session)
         self.normalization_service = NormalizationService(session)
-        self.connectors = (
-            list(connectors) if connectors is not None else get_default_connectors()
-        )
+        self.connectors = list(connectors) if connectors is not None else get_default_connectors()
 
     async def collect_articles(self) -> dict[str, int]:
-        counts: dict[str, int] = {
-            connector.source_name: 0 for connector in self.connectors
-        }
+        counts: dict[str, int] = {connector.source_name: 0 for connector in self.connectors}
 
         try:
             for connector in self.connectors:

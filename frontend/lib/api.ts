@@ -24,6 +24,19 @@ export interface Article {
   published_at?: string;
 }
 
+export interface Paper {
+  id: string;
+  arxiv_id: string;
+  title: string;
+  summary: string | null;
+  url: string;
+  published_at: string;
+  upvotes: number | null;
+  github_stars: number | null;
+  ai_keywords: string[] | null;
+  relevance_score: number | null;
+}
+
 export interface TopicFrequency {
   name: string
   mention_count: number
@@ -151,6 +164,14 @@ export async function getTopTopics(
   const response = await fetch(buildUrl("/topics/top", { limit }));
   if (!response.ok) {
     throw new Error(`Top topics fetch failed: ${response.status}`);
+  }
+  return response.json();
+}
+
+export async function getTopPapers(limit: number = 20): Promise<Paper[]> {
+  const response = await fetch(buildUrl("/papers/top", { limit }));
+  if (!response.ok) {
+    throw new Error(`Papers fetch failed: ${response.status}`);
   }
   return response.json();
 }

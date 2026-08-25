@@ -23,6 +23,7 @@ celery_app.conf.update(
         "app.tasks.trend_tasks",
         "app.tasks.brief_tasks",
         "app.tasks.paper_tasks",
+        "app.tasks.ranking_tasks",
     ),
 )
 
@@ -53,6 +54,12 @@ def trigger_collect_papers() -> None:
     collect_papers.delay()
 
 
+def trigger_re_rank_recent_clusters() -> None:
+    from app.tasks.ranking_tasks import re_rank_recent_clusters
+
+    re_rank_recent_clusters.delay()
+
+
 def register_scheduler_jobs(scheduler: BackgroundScheduler) -> None:
     scheduler.add_job(
         trigger_collect_articles,
@@ -67,9 +74,9 @@ def register_scheduler_jobs(scheduler: BackgroundScheduler) -> None:
         replace_existing=True,
     )
     scheduler.add_job(
-        trigger_generate_daily_brief,
+        trigger_re_rank_recent_clusters,
         CronTrigger(hour=settings.DAILY_BRIEF_HOUR, minute=0, timezone=settings.TIMEZONE),
-        id="generate_daily_brief_at_configured_hour",
+        id="re_rank_then_generate_daily_brief",
         replace_existing=True,
     )
     scheduler.add_job(

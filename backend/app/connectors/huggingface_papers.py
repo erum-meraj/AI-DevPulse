@@ -20,9 +20,13 @@ class HuggingFacePapersConnector:
         async with httpx.AsyncClient(
             timeout=HTTP_TIMEOUT_SECONDS, headers={"User-Agent": HTTP_USER_AGENT}
         ) as client:
-            response = await client.get(HF_DAILY_PAPERS_API_URL)
-            response.raise_for_status()
-            raw_papers = response.json()
+            try:
+                response = await client.get(HF_DAILY_PAPERS_API_URL)
+                response.raise_for_status()
+                raw_papers = response.json()
+            except RuntimeError:
+                # Event loop may be closing in Celery tasks
+                raw_papers = []
 
         logger.info("huggingface_papers_fetched", count=len(raw_papers))
         return [self._normalize(entry) for entry in raw_papers]
